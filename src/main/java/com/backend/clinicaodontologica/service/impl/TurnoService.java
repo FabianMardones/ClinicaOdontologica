@@ -56,7 +56,7 @@ public class TurnoService implements ITurnoService {
         Odontologo odontologoExistente = odontologoService.buscarOdontologoPorMatricula(turnoDto.getMatricula());
 
         Turno turnoEntidad = modelMapper.map(turnoDto, Turno.class);
-        TurnoSalidaDto turnoSalidaDto = null; // Declarar fuera del bloque if
+        TurnoSalidaDto turnoSalidaDto = null;
 
         if (pacienteExistente != null && pacienteExistente.getId() != null && odontologoExistente != null && odontologoExistente.getId() != null) {
             turnoEntidad.setPaciente(pacienteExistente);
