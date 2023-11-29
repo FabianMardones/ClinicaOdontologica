@@ -5,8 +5,10 @@ import com.backend.clinicaodontologica.dto.entrada.odontologo.OdontologoEntradaD
 import com.backend.clinicaodontologica.dto.modificacion.OdontologoModificacionEntradaDto;
 import com.backend.clinicaodontologica.dto.salida.odontologo.OdontologoSalidaDto;
 import com.backend.clinicaodontologica.entity.Odontologo;
+import com.backend.clinicaodontologica.entity.Turno;
 import com.backend.clinicaodontologica.exceptions.ResourceNotFoundException;
 import com.backend.clinicaodontologica.repository.OdontologoRepository;
+import com.backend.clinicaodontologica.repository.TurnoRespository;
 import com.backend.clinicaodontologica.service.IOdontologoService;
 import com.backend.clinicaodontologica.utils.JsonPrinter;
 import org.modelmapper.ModelMapper;
@@ -20,10 +22,13 @@ import java.util.List;
 public class OdontologoService implements IOdontologoService {
     private final Logger LOGGER = LoggerFactory.getLogger(OdontologoService.class);
     private OdontologoRepository odontologoRepository;
+
+    private TurnoRespository turnoRespository;
     private ModelMapper modelMapper;
 
-    public OdontologoService(OdontologoRepository odontologoRepository, ModelMapper modelMapper) {
+    public OdontologoService(OdontologoRepository odontologoRepository, TurnoRespository turnoRespository,ModelMapper modelMapper) {
         this.odontologoRepository = odontologoRepository;
+        this.turnoRespository = turnoRespository;
         this.modelMapper = modelMapper;
 
     }
@@ -65,7 +70,13 @@ public class OdontologoService implements IOdontologoService {
 
     @Override
     public void eliminarOdontologo(Long id) throws ResourceNotFoundException {
-        if (odontologoRepository.findById(id).orElse(null) != null) {
+        Odontologo odontologo = odontologoRepository.findById(id).orElse(null);
+        if (odontologo != null) {
+            List<Turno> turnoAsociado =  turnoRespository.findByOdontologoId(id);
+            if (!turnoAsociado.isEmpty()) {
+                LOGGER.error("No se puede eliminar el odontologo con id {} ya que está asociado a turnos", id);
+                throw new ResourceNotFoundException("No se puede eliminar el odontólogo ya que está asociado a turnos");
+            }
             odontologoRepository.deleteById(id);
             LOGGER.warn("Se ha eliminado el odontologo con id: {}", id);
         } else {

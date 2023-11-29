@@ -4,8 +4,10 @@ import com.backend.clinicaodontologica.dto.entrada.paciente.PacienteEntradaDto;
 import com.backend.clinicaodontologica.dto.modificacion.PacienteModificacionEntradaDto;
 import com.backend.clinicaodontologica.dto.salida.paciente.PacienteSalidaDto;
 import com.backend.clinicaodontologica.entity.Paciente;
+import com.backend.clinicaodontologica.entity.Turno;
 import com.backend.clinicaodontologica.exceptions.ResourceNotFoundException;
 import com.backend.clinicaodontologica.repository.PacienteRepository;
+import com.backend.clinicaodontologica.repository.TurnoRespository;
 import com.backend.clinicaodontologica.service.IPacienteService;
 import com.backend.clinicaodontologica.utils.JsonPrinter;
 import org.modelmapper.ModelMapper;
@@ -19,10 +21,13 @@ import java.util.List;
 public class PacienteService implements IPacienteService {
     private final Logger LOGGER = LoggerFactory.getLogger(PacienteService.class);
     private PacienteRepository pacienteRepository;
+
+    private TurnoRespository turnoRespository;
     private ModelMapper modelMapper;
 
-    public PacienteService(PacienteRepository pacienteRepository, ModelMapper modelMapper) {
+    public PacienteService(PacienteRepository pacienteRepository, TurnoRespository turnoRespository,ModelMapper modelMapper) {
         this.pacienteRepository = pacienteRepository;
+        this.turnoRespository = turnoRespository;
         this.modelMapper = modelMapper;
         configurarMapping();
     }
@@ -86,14 +91,19 @@ public class PacienteService implements IPacienteService {
 
     @Override
     public void eliminarPacientePorId(Long id) throws ResourceNotFoundException {
-        if (pacienteRepository.findById(id).orElse(null) != null) {
+        Paciente paciente = pacienteRepository.findById(id).orElse(null);
+        if (paciente != null) {
+            List<Turno> turnosAsociados = turnoRespository.findByPacienteId(id);
+            if (!turnosAsociados.isEmpty()) {
+                LOGGER.error("No se puede eliminar el paciente con id {} ya que está asociado a turnos");
+                throw new ResourceNotFoundException("No se puede eliminar el paciente ya que está asociado a turnos");
+            }
             pacienteRepository.deleteById(id);
             LOGGER.warn("Se ha eliminado el paciente con id: {}", id);
         } else {
             LOGGER.error("No se encontró el paciente con id{}: ", id);
             throw new ResourceNotFoundException("No se ha encontrado el paciente con el id: " + id);
         }
-
     }
 
     @Override
