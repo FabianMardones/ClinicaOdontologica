@@ -15,7 +15,7 @@ public interface IPacienteService {
 
     PacienteSalidaDto buscarPacientePorId(Long id);
 
-    PacienteSalidaDto actualizarPaciente(PacienteModificacionEntradaDto paciente);
+    PacienteSalidaDto actualizarPaciente(PacienteModificacionEntradaDto paciente) throws ResourceNotFoundException;
 
     void eliminarPacientePorId(Long id) throws ResourceNotFoundException;
 

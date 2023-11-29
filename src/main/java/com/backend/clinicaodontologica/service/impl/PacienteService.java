@@ -3,10 +3,12 @@ package com.backend.clinicaodontologica.service.impl;
 import com.backend.clinicaodontologica.dto.entrada.paciente.PacienteEntradaDto;
 import com.backend.clinicaodontologica.dto.modificacion.PacienteModificacionEntradaDto;
 import com.backend.clinicaodontologica.dto.salida.paciente.PacienteSalidaDto;
+import com.backend.clinicaodontologica.entity.Domicilio;
 import com.backend.clinicaodontologica.entity.Paciente;
 import com.backend.clinicaodontologica.entity.Turno;
 import com.backend.clinicaodontologica.exceptions.DniDuplicadoException;
 import com.backend.clinicaodontologica.exceptions.ResourceNotFoundException;
+import com.backend.clinicaodontologica.repository.DomicilioRepository;
 import com.backend.clinicaodontologica.repository.PacienteRepository;
 import com.backend.clinicaodontologica.repository.TurnoRespository;
 import com.backend.clinicaodontologica.service.IPacienteService;
@@ -23,13 +25,14 @@ import java.util.List;
 public class PacienteService implements IPacienteService {
     private final Logger LOGGER = LoggerFactory.getLogger(PacienteService.class);
     private PacienteRepository pacienteRepository;
-
     private TurnoRespository turnoRespository;
+    private DomicilioRepository domicilioRepository;
     private ModelMapper modelMapper;
 
-    public PacienteService(PacienteRepository pacienteRepository, TurnoRespository turnoRespository,ModelMapper modelMapper) {
+    public PacienteService(PacienteRepository pacienteRepository, TurnoRespository turnoRespository, DomicilioRepository domicilioRepository,ModelMapper modelMapper) {
         this.pacienteRepository = pacienteRepository;
         this.turnoRespository = turnoRespository;
+        this.domicilioRepository = domicilioRepository;
         this.modelMapper = modelMapper;
         configurarMapping();
     }
@@ -77,25 +80,35 @@ public class PacienteService implements IPacienteService {
     }
 
     @Override
-    public PacienteSalidaDto actualizarPaciente(PacienteModificacionEntradaDto paciente) {
+    public PacienteSalidaDto actualizarPaciente(PacienteModificacionEntradaDto paciente) throws ResourceNotFoundException {
         Paciente pacienteRecibido = modelMapper.map(paciente, Paciente.class);
         Paciente pacienteActualizar = pacienteRepository.findById(pacienteRecibido.getId()).orElse(null);
 
         PacienteSalidaDto pacienteSalidaDto = null;
 
         if (pacienteActualizar != null) {
-            pacienteActualizar = pacienteRecibido;
+            pacienteActualizar.setNombre(pacienteRecibido.getNombre());
+            pacienteActualizar.setApellido(pacienteRecibido.getApellido());
+            pacienteActualizar.setDni(pacienteRecibido.getDni());
+
             pacienteRepository.save(pacienteActualizar);
+
+            Domicilio domicilioPaciente = pacienteActualizar.getDomicilio();
+
+            domicilioPaciente.setCalle(paciente.getDomicilioModificacionEntradaDto().getCalle());
+            domicilioPaciente.setNumero(paciente.getDomicilioModificacionEntradaDto().getNumero());
+            domicilioPaciente.setLocalidad(paciente.getDomicilioModificacionEntradaDto().getLocalidad());
+            domicilioPaciente.setProvincia(paciente.getDomicilioModificacionEntradaDto().getProvincia());
+
+            domicilioRepository.save(domicilioPaciente);
 
             pacienteSalidaDto = modelMapper.map(pacienteActualizar, PacienteSalidaDto.class);
             LOGGER.warn("Paciente actualizado correctamente: {}", JsonPrinter.toString(pacienteSalidaDto));
 
         } else {
             LOGGER.error("Paciente no encontrado, por lo que no se acutalizó ningún registro");
-            //lanzar excepcion correspondiente
+            throw new ResourceNotFoundException("No se actualizó ningún registro ya que Paciente no fue encontrado");
         }
-
-
         return pacienteSalidaDto;
     }
 
