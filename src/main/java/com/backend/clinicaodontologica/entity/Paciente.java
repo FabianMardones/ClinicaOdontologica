@@ -23,7 +23,7 @@ public class Paciente {
     @Column(length = 50)
     private LocalDate fechaDeIngreso;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
     @JoinColumn(name = "domicilio_id")
     private Domicilio domicilio;
 

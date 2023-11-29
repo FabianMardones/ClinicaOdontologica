@@ -93,6 +93,17 @@ public class OdontologoService implements IOdontologoService {
         return odontologoSalidaDto;
     }
 
+    @Override
+    public Odontologo buscarOdontologoPorMatricula(String matricula) {
+        Odontologo odontologoBuscado = odontologoRepository.findByMatricula(matricula);
+        Odontologo odontologoEncontrado = null;
 
-
+        if (odontologoBuscado != null){
+            odontologoEncontrado = modelMapper.map(odontologoBuscado, Odontologo.class);
+            LOGGER.info("Odontologo encontado: {}", odontologoEncontrado);
+        } else {
+            LOGGER.error("El id no se encuentra registrado en la base de datos");
+        }
+        return odontologoEncontrado;
+    }
 }

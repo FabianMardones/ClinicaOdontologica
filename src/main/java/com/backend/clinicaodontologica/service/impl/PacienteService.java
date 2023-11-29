@@ -97,8 +97,8 @@ public class PacienteService implements IPacienteService {
     }
 
     @Override
-    public PacienteSalidaDto buscarPacientePorDni(int dni) {
-        return modelMapper.map(pacienteRepository.findByDni(dni), PacienteSalidaDto.class);
+    public Paciente buscarPacientePorDni(int dni) {
+        return modelMapper.map(pacienteRepository.findByDni(dni), Paciente.class);
     }
 
     private void configurarMapping() {

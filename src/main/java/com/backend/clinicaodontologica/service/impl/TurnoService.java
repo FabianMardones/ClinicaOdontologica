@@ -19,37 +19,69 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-public class TrunoService implements ITurnoService {
+public class TurnoService implements ITurnoService {
+
 
     private final Logger LOGGER = LoggerFactory.getLogger(ITurnoService.class);
     private final TurnoRespository turnoRespository;
+    private final PacienteRepository pacienteRepository;
+    private final OdontologoRepository odontologoRepository;
     private final ModelMapper modelMapper;
     private final OdontologoService odontologoService;
     private final PacienteService pacienteService;
 
-    public TrunoService(TurnoRespository turnoRespository, ModelMapper modelMapper, OdontologoService odontologoService, PacienteService pacienteService) {
+    public TurnoService(TurnoRespository turnoRespository, PacienteRepository pacienteRepository, OdontologoRepository odontologoRepository, ModelMapper modelMapper, OdontologoService odontologoService, PacienteService pacienteService) {
         this.turnoRespository = turnoRespository;
+        this.pacienteRepository = pacienteRepository;
+        this.odontologoRepository = odontologoRepository;
         this.modelMapper = modelMapper;
         this.odontologoService = odontologoService;
         this.pacienteService = pacienteService;
         configurarMapping();
     }
 
+    @Transactional
     @Override
     public TurnoSalidaDto registrarTurno(TurnoEntradaDto turnoDto) {
-        //convertimos mediante el mapper dtoEntrada a entidad
         LOGGER.info("TurnoEntradaDto: {}", JsonPrinter.toString(turnoDto));
-        Turno turnoEntidad = modelMapper.map(turnoDto, Turno.class);
 
-        //mandamos a persistir a la capa dao y obtenemos una entidad
-        Turno turnoAPersistir = turnoRespository.save(turnoEntidad);
-        //Transformamos la entidad obtenida en salidaDto
-        TurnoSalidaDto turnoSalidaDto = modelMapper.map(turnoAPersistir, TurnoSalidaDto.class);
+        LOGGER.info("DNI en TurnoEntradaDto: {}", turnoDto.getDni());
+        LOGGER.info("Matrícula en TurnoEntradaDto: {}", turnoDto.getMatricula());
+
+        Paciente pacienteExistente = pacienteService.buscarPacientePorDni(turnoDto.getDni());
+        Odontologo odontologoExistente = odontologoService.buscarOdontologoPorMatricula(turnoDto.getMatricula());
+
+        Turno turnoEntidad = modelMapper.map(turnoDto, Turno.class);
+        TurnoSalidaDto turnoSalidaDto = null; // Declarar fuera del bloque if
+
+        if (pacienteExistente != null && pacienteExistente.getId() != null && odontologoExistente != null && odontologoExistente.getId() != null) {
+            turnoEntidad.setPaciente(pacienteExistente);
+            turnoEntidad.setOdontologo(odontologoExistente);
+
+            LOGGER.info("Paciente Existente: {}", JsonPrinter.toString(pacienteExistente));
+            LOGGER.info("Odontologo Existente: {}", JsonPrinter.toString(odontologoExistente));
+
+
+            Turno turnoAPersistir = turnoRespository.save(turnoEntidad);
+            turnoSalidaDto = modelMapper.map(turnoAPersistir, TurnoSalidaDto.class);
+
+            LOGGER.info("DNI en Turno antes de persistir: {}", turnoEntidad.getPaciente().getDni());
+            LOGGER.info("Matrícula en Turno antes de persistir: {}", turnoEntidad.getOdontologo().getMatricula());
+
+            turnoSalidaDto.setDni(turnoAPersistir.getPaciente().getDni());
+            turnoSalidaDto.setMatricula(turnoAPersistir.getOdontologo().getMatricula());
+
+            LOGGER.info("Turnos Salida Dto: {}", JsonPrinter.toString(turnoSalidaDto));
+        } else {
+            LOGGER.error("No se han encontrado los pacientes y odontologos");
+        }
         return turnoSalidaDto;
     }
+
 
     @Override
     public List<TurnoSalidaDto> listarTurnos() {
@@ -103,14 +135,8 @@ public class TrunoService implements ITurnoService {
     }
 
     private void configurarMapping(){
-        modelMapper.typeMap(TurnoEntradaDto.class, Turno.class)
-                .addMappings(modelMapper -> modelMapper.map(TurnoEntradaDto::getPacienteEntradaDto, Turno::setPaciente))
-                .addMappings(modelMapper -> modelMapper.map(TurnoEntradaDto::getOdontologoEntradaDto, Turno::setOdontologo));
         modelMapper.typeMap(Turno.class, TurnoSalidaDto.class)
-                .addMappings(modelMapper -> modelMapper.map(Turno::getPaciente, TurnoSalidaDto::setPacienteSalidaDto))
-                .addMappings(modelMapper -> modelMapper.map(Turno::getOdontologo, TurnoSalidaDto::setOdontologoSalidaDto));
-        modelMapper.typeMap(TurnoModificacionEntradaDto.class, Turno.class)
-                .addMappings(mapper -> mapper.map(TurnoModificacionEntradaDto::getPacienteModificacionEntradaDto, Turno::setPaciente))
-                .addMappings(mapper -> mapper.map(TurnoModificacionEntradaDto::getOdontologoModificacionEntradaDto, Turno::setOdontologo));
+                .addMapping(src -> src.getPaciente().getDni(), TurnoSalidaDto::setDni)
+                .addMapping(src -> src.getOdontologo().getMatricula(), TurnoSalidaDto::setMatricula);
     }
 }
