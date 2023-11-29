@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import javax.validation.Valid;
 import javax.validation.constraints.FutureOrPresent;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
@@ -16,26 +17,38 @@ public class TurnoModificacionEntradaDto {
 
     @FutureOrPresent(message = "La fecha no puede ser anterior al día de hoy")
     @NotNull(message = "Debe especificarse la fecha y la hora de ingreso del paciente")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime fechaYHora;
 
     @NotNull(message = "El odontologo no puede ser nulo")
-    @Valid
-    private OdontologoModificacionEntradaDto odontologoModificacionEntradaDto;
+    private String nombrePaciente;
+    @NotNull(message = "El odontologo no puede ser nulo")
+    private String apellidoPaciente;
+    @NotBlank(message = "El id no puede estar vacío")
+    private int dni;
+    @NotNull(message = "El nombre del odontologo no puede ser nulo")
+    private String nombreOdontologo;
 
-    @NotNull(message = "El paciente no puede ser nulo")
-    @Valid
-    private PacienteModificacionEntradaDto pacienteModificacionEntradaDto;
+    @NotNull(message = "El apellido del odontologo no puede ser nulo")
+    private String apellidoOdontologo;
+
+    @NotNull(message = "La matricula del odontologo no puede ser nula")
+    private String matricula;
 
 
     public TurnoModificacionEntradaDto() {
     }
 
-    public TurnoModificacionEntradaDto(Long id, LocalDateTime fechaYHora, OdontologoModificacionEntradaDto odontologoModificacionEntradaDto, PacienteModificacionEntradaDto pacienteModificacionEntradaDto) {
+
+    public TurnoModificacionEntradaDto(Long id, LocalDateTime fechaYHora, String nombrePaciente, String apellidoPaciente, int dni, String nombreOdontologo, String apellidoOdontologo, String matricula) {
         this.id = id;
         this.fechaYHora = fechaYHora;
-        this.odontologoModificacionEntradaDto = odontologoModificacionEntradaDto;
-        this.pacienteModificacionEntradaDto = pacienteModificacionEntradaDto;
+        this.nombrePaciente = nombrePaciente;
+        this.apellidoPaciente = apellidoPaciente;
+        this.dni = dni;
+        this.nombreOdontologo = nombreOdontologo;
+        this.apellidoOdontologo = apellidoOdontologo;
+        this.matricula = matricula;
     }
 
     public Long getId() {
@@ -54,19 +67,51 @@ public class TurnoModificacionEntradaDto {
         this.fechaYHora = fechaYHora;
     }
 
-    public OdontologoModificacionEntradaDto getOdontologoModificacionEntradaDto() {
-        return odontologoModificacionEntradaDto;
+    public String getNombrePaciente() {
+        return nombrePaciente;
     }
 
-    public void setOdontologoModificacionEntradaDto(OdontologoModificacionEntradaDto odontologoModificacionEntradaDto) {
-        this.odontologoModificacionEntradaDto = odontologoModificacionEntradaDto;
+    public void setNombrePaciente(String nombrePaciente) {
+        this.nombrePaciente = nombrePaciente;
     }
 
-    public PacienteModificacionEntradaDto getPacienteModificacionEntradaDto() {
-        return pacienteModificacionEntradaDto;
+    public String getApellidoPaciente() {
+        return apellidoPaciente;
     }
 
-    public void setPacienteModificacionEntradaDto(PacienteModificacionEntradaDto pacienteModificacionEntradaDto) {
-        this.pacienteModificacionEntradaDto = pacienteModificacionEntradaDto;
+    public void setApellidoPaciente(String apellidoPaciente) {
+        this.apellidoPaciente = apellidoPaciente;
+    }
+
+    public int getDni() {
+        return dni;
+    }
+
+    public void setDni(int dni) {
+        this.dni = dni;
+    }
+
+    public String getNombreOdontologo() {
+        return nombreOdontologo;
+    }
+
+    public void setNombreOdontologo(String nombreOdontologo) {
+        this.nombreOdontologo = nombreOdontologo;
+    }
+
+    public String getApellidoOdontologo() {
+        return apellidoOdontologo;
+    }
+
+    public void setApellidoOdontologo(String apellidoOdontologo) {
+        this.apellidoOdontologo = apellidoOdontologo;
+    }
+
+    public String getMatricula() {
+        return matricula;
+    }
+
+    public void setMatricula(String matricula) {
+        this.matricula = matricula;
     }
 }

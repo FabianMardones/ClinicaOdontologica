@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TurnoService implements ITurnoService {
@@ -28,16 +29,12 @@ public class TurnoService implements ITurnoService {
 
     private final Logger LOGGER = LoggerFactory.getLogger(ITurnoService.class);
     private final TurnoRespository turnoRespository;
-    private final PacienteRepository pacienteRepository;
-    private final OdontologoRepository odontologoRepository;
     private final ModelMapper modelMapper;
     private final OdontologoService odontologoService;
     private final PacienteService pacienteService;
 
-    public TurnoService(TurnoRespository turnoRespository, PacienteRepository pacienteRepository, OdontologoRepository odontologoRepository, ModelMapper modelMapper, OdontologoService odontologoService, PacienteService pacienteService) {
+    public TurnoService(TurnoRespository turnoRespository, ModelMapper modelMapper, OdontologoService odontologoService, PacienteService pacienteService) {
         this.turnoRespository = turnoRespository;
-        this.pacienteRepository = pacienteRepository;
-        this.odontologoRepository = odontologoRepository;
         this.modelMapper = modelMapper;
         this.odontologoService = odontologoService;
         this.pacienteService = pacienteService;
@@ -105,23 +102,46 @@ public class TurnoService implements ITurnoService {
     }
 
     @Override
-    public TurnoSalidaDto actualizarTurno(TurnoModificacionEntradaDto turno) {
-        Turno turnoRecibido = modelMapper.map(turno, Turno.class);
-        Turno turnoActualizar = turnoRespository.findById(turnoRecibido.getId()).orElse(null);
+    public TurnoSalidaDto actualizarTurno(TurnoModificacionEntradaDto turnoModificacion) {
+        Long idTurno = turnoModificacion.getId();
 
-        TurnoSalidaDto turnoSalidaDto = null;
+        Optional<Turno> optionalTurno = turnoRespository.findById(idTurno);
 
-        if (turnoActualizar != null) {
-            turnoActualizar = turnoRecibido;
-            turnoRespository.save(turnoActualizar);
+        if (optionalTurno.isPresent()) {
+            Turno turnoExistente = optionalTurno.get();
 
-            turnoSalidaDto = modelMapper.map(turnoActualizar, TurnoSalidaDto.class);
-            LOGGER.warn("Paciente actualizado correctamente: {}", JsonPrinter.toString(turnoSalidaDto));
+            turnoExistente.setFechaYHora(turnoModificacion.getFechaYHora());
+
+            if (turnoModificacion.getDni() != 0) {
+                Paciente pacienteExistente = pacienteService.buscarPacientePorDni(turnoModificacion.getDni());
+                if (pacienteExistente != null) {
+                    turnoExistente.setPaciente(pacienteExistente);
+                } else {
+                    LOGGER.error("Paciente con DNI {} no encontrado, no se actualizó.", turnoModificacion.getDni());
+                }
+            }
+
+            if (turnoModificacion.getMatricula() != null) {
+                Odontologo odontologoExistente = odontologoService.buscarOdontologoPorMatricula(turnoModificacion.getMatricula());
+                if (odontologoExistente != null) {
+                    turnoExistente.setOdontologo(odontologoExistente);
+                } else {
+                    LOGGER.error("Odontólogo con Matrícula {} no encontrado, no se actualizó.", turnoModificacion.getMatricula());
+                }
+            }
+
+            turnoRespository.save(turnoExistente);
+
+            TurnoSalidaDto turnoSalidaDto = modelMapper.map(turnoExistente, TurnoSalidaDto.class);
+            LOGGER.warn("Turno actualizado correctamente: {}", JsonPrinter.toString(turnoSalidaDto));
+            return turnoSalidaDto;
         } else {
-            LOGGER.error("Turno no encontrado, por lo que no se actualizó ningún registro");
+            LOGGER.error("Turno no encontrado con ID: {}", idTurno);
+            return null;
         }
-        return turnoSalidaDto;
     }
+
+
 
     @Override
     public void eliminarTurnoPorId(Long id) throws ResourceNotFoundException {
