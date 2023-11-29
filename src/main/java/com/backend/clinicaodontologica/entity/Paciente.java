@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class Paciente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(length = 50)
@@ -17,7 +17,7 @@ public class Paciente {
     @Column(length = 50)
     private String apellido;
 
-    @Column(length = 50)
+    @Column(length = 50, unique = true)
     private int dni;
 
     @Column(length = 50)

@@ -5,6 +5,7 @@ import com.backend.clinicaodontologica.dto.modificacion.PacienteModificacionEntr
 import com.backend.clinicaodontologica.dto.salida.paciente.PacienteSalidaDto;
 import com.backend.clinicaodontologica.entity.Paciente;
 import com.backend.clinicaodontologica.entity.Turno;
+import com.backend.clinicaodontologica.exceptions.DniDuplicadoException;
 import com.backend.clinicaodontologica.exceptions.ResourceNotFoundException;
 import com.backend.clinicaodontologica.repository.PacienteRepository;
 import com.backend.clinicaodontologica.repository.TurnoRespository;
@@ -13,6 +14,7 @@ import com.backend.clinicaodontologica.utils.JsonPrinter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -33,16 +35,24 @@ public class PacienteService implements IPacienteService {
     }
 
     public PacienteSalidaDto registrarPaciente(PacienteEntradaDto paciente) {
-        //convertimos mediante el mapper dtoEntrada a entidad
-        LOGGER.info("PacienteEntradaDto: {}", JsonPrinter.toString(paciente));
-        Paciente pacienteEntidad = modelMapper.map(paciente, Paciente.class);
 
-        //mandamos a persistir a la capa dao y obtenemos una entidad
-        Paciente pacienteAPersistir = pacienteRepository.save(pacienteEntidad);
-        //Transformamos la entidad obtenida en salidaDto
-        PacienteSalidaDto pacienteSalidaDto = modelMapper.map(pacienteAPersistir, PacienteSalidaDto.class);
-        LOGGER.info("PacienteSalidaDto: " + JsonPrinter.toString(pacienteSalidaDto));
-        return pacienteSalidaDto;
+        try{
+            //convertimos mediante el mapper dtoEntrada a entidad
+            LOGGER.info("PacienteEntradaDto: {}", JsonPrinter.toString(paciente));
+            Paciente pacienteEntidad = modelMapper.map(paciente, Paciente.class);
+
+            //mandamos a persistir a la capa dao y obtenemos una entidad
+            Paciente pacienteAPersistir = pacienteRepository.save(pacienteEntidad);
+            //Transformamos la entidad obtenida en salidaDto
+            PacienteSalidaDto pacienteSalidaDto = modelMapper.map(pacienteAPersistir, PacienteSalidaDto.class);
+            LOGGER.info("PacienteSalidaDto: " + JsonPrinter.toString(pacienteSalidaDto));
+            return pacienteSalidaDto;
+        }catch (DataIntegrityViolationException e){
+            // Manejar la excepción de violación de integridad de datos (por ejemplo, DNI duplicado)
+            LOGGER.error("Error al registrar paciente: {}", e.getMessage());
+            // Puedes lanzar una excepción personalizada o devolver un objeto indicando el error, según tus necesidades
+            throw new DniDuplicadoException("Error al registrar paciente: DNI duplicado");
+        }
     }
 
 
