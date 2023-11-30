@@ -6,6 +6,7 @@ import com.backend.clinicaodontologica.dto.modificacion.OdontologoModificacionEn
 import com.backend.clinicaodontologica.dto.salida.odontologo.OdontologoSalidaDto;
 import com.backend.clinicaodontologica.entity.Odontologo;
 import com.backend.clinicaodontologica.entity.Turno;
+import com.backend.clinicaodontologica.exceptions.DniDuplicadoException;
 import com.backend.clinicaodontologica.exceptions.ResourceNotFoundException;
 import com.backend.clinicaodontologica.repository.OdontologoRepository;
 import com.backend.clinicaodontologica.repository.TurnoRespository;
@@ -14,6 +15,7 @@ import com.backend.clinicaodontologica.utils.JsonPrinter;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -35,15 +37,22 @@ public class OdontologoService implements IOdontologoService {
 
     @Override
     public OdontologoSalidaDto registrarOdontologo(OdontologoEntradaDto odontologo) {
-        LOGGER.info("Odontologo encontrado: {}", JsonPrinter.toString(odontologo));
+        try{
+            LOGGER.info("Odontologo encontrado: {}", JsonPrinter.toString(odontologo));
 
-        Odontologo odontologoEntidad = modelMapper.map(odontologo, Odontologo.class);
-        Odontologo odontolosoAPersitir = odontologoRepository.save(odontologoEntidad);
+            Odontologo odontologoEntidad = modelMapper.map(odontologo, Odontologo.class);
+            Odontologo odontolosoAPersitir = odontologoRepository.save(odontologoEntidad);
 
-        OdontologoSalidaDto odontologoSalidaDto = modelMapper.map(odontolosoAPersitir, OdontologoSalidaDto.class);
+            OdontologoSalidaDto odontologoSalidaDto = modelMapper.map(odontolosoAPersitir, OdontologoSalidaDto.class);
 
-        LOGGER.info("OdontologoSalidaDto: {}", JsonPrinter.toString(odontologoSalidaDto));
-        return odontologoSalidaDto;
+            LOGGER.info("OdontologoSalidaDto: {}", JsonPrinter.toString(odontologoSalidaDto));
+            return odontologoSalidaDto;
+        }catch (DataIntegrityViolationException e){
+            LOGGER.error("Error al registrar odontologo: {}", e.getMessage());
+
+            throw new DniDuplicadoException("Error al registrar Odontoglo: MATRICULA duplicada");
+        }
+
     }
 
     @Override

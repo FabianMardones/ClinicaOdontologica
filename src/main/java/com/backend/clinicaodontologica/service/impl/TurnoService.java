@@ -75,6 +75,7 @@ public class TurnoService implements ITurnoService {
             LOGGER.info("Turnos Salida Dto: {}", JsonPrinter.toString(turnoSalidaDto));
         } else {
             LOGGER.error("No se han encontrado los pacientes y odontologos");
+            throw new IllegalArgumentException("Error! no hay pacientes registrados para generar un turno");
         }
         return turnoSalidaDto;
     }

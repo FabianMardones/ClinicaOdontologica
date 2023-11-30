@@ -11,6 +11,7 @@ public class Odontologo {
     private Long id;
     private String nombre;
     private String apellido;
+    @Column(unique = true)
     private String matricula;
     public Odontologo() {
     }
