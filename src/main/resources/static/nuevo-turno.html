@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica Odontológica</title>
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="min-h-100 bg-gray-200">
+    <div class="md:flex min-h-screen md:align-top">
+        <aside class="md:w-2/5 lg:w-2/5 xl:w-1/5 bg-blue-600 px-5 py-10">
+            <h1 class="uppercase text-white tracking-wide text-2xl  font-bold mt-2">Clinica Odontológica</h1>
+            <p class="mt-10 text-white">Información de Turnos</p>
+            <nav class="mt-8">
+                <a  
+                    href="index-turnos.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 hover:text-yellow-400 bg-red-700 rounded"
+                >Pacientes registrados</a>
+                <a 
+                    href="nuevo-paciente.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 mt-2 hover:text-yellow-400 bg-red-700 rounded"
+                >Nuevo Paciente</a>
+            </nav>
+
+            <nav class="mt-8">
+                <a  
+                    href="index-odontologos.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 hover:text-yellow-400 bg-red-700 rounded"
+                >Odontologos registrados</a>
+                <a 
+                    href="nuevo-odontologo.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 mt-2 hover:text-yellow-400 bg-red-700 rounded"
+                >Nuevo Odontologo</a>
+            </nav>
+
+            <nav class="mt-8">
+                <a  
+                    href="index-turnos.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 hover:text-yellow-400 bg-red-700 rounded"
+                >Turnos agendados</a>
+                <a 
+                    href="nuevo-turno.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 mt-2 hover:text-yellow-400 bg-red-700 rounded"
+                >Nuevo Turno</a>
+            </nav>
+        </aside> <!--sidebar-->
+        <main class="md:w-3/5  xl:w-4/5 px-5 py-10 bg-gray-200">
+            <h2 class="text-3xl font-bold text-center">Nuevo Turno</h2>
+
+            <div class="flex flex-col mt-10 items-center">
+                <div class="-my-2 py-2 overflow-x-auto sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 w-10/12 md:w-8/12 lg:w-6/12">
+                    <div class=" shadow overflow-hidden sm:rounded-lg border-b border-gray-200 ">
+                        <form id="formulario" class="bg-white p-3" method="POST">
+                            
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="empresa">Fecha Ingreso</label>
+                                <input 
+                                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline fechaYHora"
+                                    id="fechaYHora"
+                                    name="fechaYhora"
+                                    type="datetime-local"
+                                    placeholder="fecha de ingreso"
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">DNI Paciente</label>
+                                <select class="min-w-full border py-2" id="dni-paciente">
+                                    <option value="">- Seleccionar -</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="empresa">Nombre Paciente</label>
+                                <input 
+                                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline fechaYHora"
+                                    id="nombre-paciente"
+                                    name="nombre-paciente"
+                                    type="text"
+                                    placeholder="Nombre del Paciente"
+                                    disabled
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="empresa">Apellido Paciente</label>
+                                <input 
+                                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline fechaYHora"
+                                    id="apellido-paciente"
+                                    name="apellido-paciente"
+                                    type="text"
+                                    placeholder="Apellido del Paciente"
+                                    disabled
+                                />
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="nombre">Matricula Odontologo</label>
+                                <select class="min-w-full border py-2" id="matricula-odontologo">
+                                    <option value="">- Seleccionar -</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="empresa">Nombre Odontologo</label>
+                                <input 
+                                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline fechaYHora"
+                                    id="nombre-odontologo"
+                                    name="nombre-odontologo"
+                                    type="text"
+                                    placeholder="Nombre del Odontologo"
+                                    disabled
+                                />
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-gray-700 text-sm font-bold mb-2" for="empresa">Apellido Odontologo</label>
+                                <input 
+                                    class="appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline fechaYHora"
+                                    id="apellido-odontologo"
+                                    name="apellido-odontologo"
+                                    type="text"
+                                    placeholder="Apellido del Odontologo"
+                                    disabled
+                                />
+                            </div>
+
+                    
+                            <input
+                                type="submit"
+                                class="bg-blue-600 hover:bg-blue-900 w-full mt-5 p-2 text-white uppercase font-bold"
+                                value="Agendar Nueva Cita"
+                            />
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script src="js/turnos/listarPacOd.js" type="module"></script>
+    <script src="js/turnos/nuevoTurno.js" type="module"></script>
+</body>
+</html>

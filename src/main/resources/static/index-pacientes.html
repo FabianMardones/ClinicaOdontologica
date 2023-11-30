@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinica Odontológica</title>
+    <link rel="stylesheet" href="css/tailwind.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="min-h-100 bg-gray-200">
+    <div class="md:flex min-h-screen md:align-top">
+        <aside class="md:w-2/5 lg:w-2/5 xl:w-1/5 bg-blue-600 px-5 py-10">
+            <h1 class="uppercase text-white tracking-wide text-2xl  font-bold mt-2">Clinica Odontológica</h1>
+            <p class="mt-10 text-white">Información de Turnos</p>
+            <nav class="mt-8">
+                <a  
+                    href="index-pacientes.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 hover:text-yellow-400 bg-red-700 rounded"
+                >Pacientes registrados</a>
+                <a 
+                    href="nuevo-paciente.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 mt-2 hover:text-yellow-400 bg-red-700 rounded"
+                >Nuevo Paciente</a>
+            </nav>
+
+            <nav class="mt-8">
+                <a  
+                    href="index-odontologos.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 hover:text-yellow-400 bg-red-700 rounded"
+                >Odontologos registrados</a>
+                <a 
+                    href="nuevo-odontologo.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 mt-2 hover:text-yellow-400 bg-red-700 rounded"
+                >Nuevo Odontologo</a>
+            </nav>
+
+            <nav class="mt-8">
+                <a  
+                    href="index-turnos.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 hover:text-yellow-400 bg-red-700 rounded"
+                >Turnos registrados</a>
+                <a 
+                    href="nuevo-turno.html" 
+                    class="px-3 py-1 text-white block hover:bg-red-800 mt-2 hover:text-yellow-400 bg-red-700 rounded"
+                >Nuevo Turno</a>
+            </nav>
+        </aside> <!--sidebar-->
+        <main class="md:w-3/5  xl:w-4/5 px-5 py-10 bg-gray-200">
+            
+
+            
+
+            <h2 class="text-3xl font-bold text-center">Pacientes</h2>
+
+            <div class="flex flex-col mt-10">
+                <div class="py-2 overflow-x-auto">
+                  <div class="align-middle inline-block min-w-full shadow overflow-hidden sm:rounded-lg border-b border-gray-200">
+                    <table class="min-w-full">
+                        <thead class="bg-gray-100 ">
+                            <tr>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Nombre
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Apellido
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Dni
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Fecha Ingreso
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Calle
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Numero
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Localidad
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Provincia
+                                </th>
+                                <th class="px-6 py-3 border-b border-gray-200  text-left text-xs leading-4 font-medium text-gray-600 uppercase tracking-wider">
+                                        Acciones
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="listado-pacientes" class="bg-white"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+        </main>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="js/pacientes/app.js" type="module"></script>
+</body>
+</html>

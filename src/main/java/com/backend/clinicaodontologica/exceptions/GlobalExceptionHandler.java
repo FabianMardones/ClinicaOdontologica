@@ -31,8 +31,6 @@ public class GlobalExceptionHandler {
             String errorMensaje = error.getDefaultMessage();
             exceptionMensaje.put(fieldName, errorMensaje);
         }));
-
         return exceptionMensaje;
     }
-
 }

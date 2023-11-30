@@ -20,12 +20,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class TurnoService implements ITurnoService {
-
 
     private final Logger LOGGER = LoggerFactory.getLogger(ITurnoService.class);
     private final TurnoRespository turnoRespository;
@@ -48,6 +49,8 @@ public class TurnoService implements ITurnoService {
 
         LOGGER.info("DNI en TurnoEntradaDto: {}", turnoDto.getDni());
         LOGGER.info("Matrícula en TurnoEntradaDto: {}", turnoDto.getMatricula());
+
+        validarFechaYhoraTurno(turnoDto.getFechaYHora());
 
         Paciente pacienteExistente = pacienteService.buscarPacientePorDni(turnoDto.getDni());
         Odontologo odontologoExistente = odontologoService.buscarOdontologoPorMatricula(turnoDto.getMatricula());
@@ -104,6 +107,7 @@ public class TurnoService implements ITurnoService {
 
     @Override
     public TurnoSalidaDto actualizarTurno(TurnoModificacionEntradaDto turnoModificacion) {
+        validarFechaYhoraTurno(turnoModificacion.getFechaYHora());
         Long idTurno = turnoModificacion.getId();
 
         Optional<Turno> optionalTurno = turnoRespository.findById(idTurno);
@@ -152,6 +156,15 @@ public class TurnoService implements ITurnoService {
         } else {
             LOGGER.error("No se encontró con id: {}", id);
             throw new ResourceNotFoundException("No se ha encontrado el paciente con el id: " + id);
+        }
+    }
+
+    private void validarFechaYhoraTurno(LocalDateTime fechaYhoraTurno){
+        LocalDateTime fechayHoraActual = LocalDateTime.now();
+
+        if (fechaYhoraTurno.isBefore(fechayHoraActual)) {
+            LOGGER.error("Error: La fecha y hora asignada a un turno no puede ser anterior a la fecha y hora actual.");
+            throw new IllegalArgumentException("Error: La fecha y hora asignada a un turno no puede ser anterior a la fecha y hora actual.");
         }
     }
 

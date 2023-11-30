@@ -19,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -40,6 +42,7 @@ public class PacienteService implements IPacienteService {
     public PacienteSalidaDto registrarPaciente(PacienteEntradaDto paciente) {
 
         try{
+            validarFechaRegistro(paciente.getFechaDeIngreso());
             //convertimos mediante el mapper dtoEntrada a entidad
             LOGGER.info("PacienteEntradaDto: {}", JsonPrinter.toString(paciente));
             Paciente pacienteEntidad = modelMapper.map(paciente, Paciente.class);
@@ -81,6 +84,8 @@ public class PacienteService implements IPacienteService {
 
     @Override
     public PacienteSalidaDto actualizarPaciente(PacienteModificacionEntradaDto paciente) throws ResourceNotFoundException {
+        validarFechaRegistro(paciente.getFechaDeIngreso());
+
         Paciente pacienteRecibido = modelMapper.map(paciente, Paciente.class);
         Paciente pacienteActualizar = pacienteRepository.findById(pacienteRecibido.getId()).orElse(null);
 
@@ -132,6 +137,15 @@ public class PacienteService implements IPacienteService {
     @Override
     public Paciente buscarPacientePorDni(int dni) {
         return modelMapper.map(pacienteRepository.findByDni(dni), Paciente.class);
+    }
+
+    private void validarFechaRegistro(LocalDate fechaRegistro){
+        LocalDate fechaActual = LocalDate.now();
+
+        if (!fechaRegistro.isEqual(fechaActual)) {
+            LOGGER.error("Error: La fecha de registro no puede ser anterior a la fecha actual.");
+            throw new IllegalArgumentException("Error: La fecha de registro no puede ser anterior a la fecha actual.");
+        }
     }
 
     private void configurarMapping() {
